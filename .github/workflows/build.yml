@@ -1,4 +1,4 @@
-name: Build Xperable SO-51A
+name: Build Xperable Windows & Linux
 
 on:
   push:
@@ -16,24 +16,36 @@ jobs:
       - name: Install Dependencies
         run: |
           sudo apt-get update
-          sudo apt-get install -y libusb-1.0-0-dev cmake build-essential pkg-config python3
+          sudo apt-get install -y libusb-1.0-0-dev cmake build-essential pkg-config mingw-w64 wget p7zip-full
 
-      - name: Extract LinuxLoader.efi dynamically
+      - name: Extract LinuxLoader
         run: |
-          # Clone tool Dump_Qcom_ABL
           git clone https://github.com/LittlenineEnnea/Dump_Qcom_ABL.git /tmp/Dump_Qcom_ABL
-          # Ekstrak file abl_so51a.elf lu
           python3 /tmp/Dump_Qcom_ABL/extractfv.py abl_so51a.elf -e all -o ./extracted
-          # Rename hasilnya biar dibaca sama xperable
           cp ./extracted/extracted_0.efi ./LinuxLoader-so51a.pe
 
-      - name: Compile xperable
+      - name: Compile Linux Binary
         run: |
           make clean || true
           make
 
-      - name: Upload Artifact
+      - name: Setup libusb for Windows
+        run: |
+          wget https://github.com/libusb/libusb/releases/download/v1.0.27/libusb-1.0.27.7z
+          7z x libusb-1.0.27.7z
+          mkdir -p libusb-static
+          cp MinGW64/static/libusb-1.0.a libusb-static/
+          cp -r MinGW64/include/* .
+
+      - name: Compile Windows Executable
+        run: |
+          make clean || true
+          make CROSS_BUILD=win
+
+      - name: Upload Artifacts
         uses: actions/upload-artifact@v4
         with:
-          name: xperable-so51a
-          path: xperable
+          name: xperable-binaries
+          path: |
+            xperable
+            xperable.exe
