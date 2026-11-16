@@ -29,13 +29,17 @@ jobs:
           make clean || true
           make
 
-      - name: Setup libusb for Windows
+      - name: Setup libusb for Windows (MinGW)
         run: |
+          # Download libusb versi Windows
           wget https://github.com/libusb/libusb/releases/download/v1.0.27/libusb-1.0.27.7z
           7z x libusb-1.0.27.7z
           mkdir -p libusb-static
+          # Ambil library statis
           cp MinGW64/static/libusb-1.0.a libusb-static/
-          cp -r MinGW64/include/* .
+          # Ambil file header dan taruh di folder utama biar kebaca
+          cp include/libusb-1.0/libusb.h .
+          cp include/libusb-1.0/libusb.h libusb-static/
 
       - name: Compile Windows Executable
         run: |
