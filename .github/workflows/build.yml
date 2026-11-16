@@ -16,7 +16,16 @@ jobs:
       - name: Install Dependencies
         run: |
           sudo apt-get update
-          sudo apt-get install -y libusb-1.0-0-dev cmake build-essential pkg-config
+          sudo apt-get install -y libusb-1.0-0-dev cmake build-essential pkg-config python3
+
+      - name: Extract LinuxLoader.efi dynamically
+        run: |
+          # Clone tool Dump_Qcom_ABL
+          git clone https://github.com/LittlenineEnnea/Dump_Qcom_ABL.git /tmp/Dump_Qcom_ABL
+          # Ekstrak file abl_so51a.elf lu
+          python3 /tmp/Dump_Qcom_ABL/extractfv.py abl_so51a.elf -e all -o ./extracted
+          # Rename hasilnya biar dibaca sama xperable
+          cp ./extracted/extracted_0.efi ./LinuxLoader-so51a.pe
 
       - name: Compile xperable
         run: |
