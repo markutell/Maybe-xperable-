@@ -3,7 +3,6 @@
 #include <string.h>
 #include <stdint.h>
 #include "xperable.h"
-#include "pe-parse/pe-parser-library.h"
 
 // Target: Sony Xperia 1 II (SO-51A)
 uint64_t so51a_usbbuf_offset = 0x34384; // Dari log UART crash
